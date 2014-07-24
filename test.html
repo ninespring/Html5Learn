@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<style type="text/css">
+			#div1, #div2
+			{float:left; width:330px; height:330px; margin:30px;padding:30px;border:2px solid #aaaaaa;}
+		</style>
+		<script type="text/javascript">
+			function allowDrop(ev)
+			{
+				ev.preventDefault();
+			}
+
+			function drag(ev)
+			{
+				ev.dataTransfer.setData("Text",ev.target.id);
+			}
+
+			function drop(ev)
+			{
+				ev.preventDefault();
+				var data=ev.dataTransfer.getData("Text");
+				ev.target.appendChild(document.getElementById(data));
+			}
+		</script>
+	</head>
+
+
+	<body>
+		<div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<img src="ac.jpg" draggable="true" ondragstart="drag(event)" id="drag1" width="330" height="330" />
+		</div>
+		<div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+		<canvas id="myCanvas" width="200" height="100">
+			Your browser does not support the canvas element.
+			<script type="text/javascript">
+				var c=document.getElementById("myCanvas");
+				var cxt=c.getContext("2d");
+				cxt.fillStyle="#FF0000";
+				cxt.fillRect(0,0,150,175);
+				cxt.moveTo(10,40);
+				cxt.lineTo(150,50);
+				cxt.lineTo(10,50);
+				cxt.stroke();
+
+				cxt.fillStyle="#CCCCCC";
+				cxt.beginPath();
+				cxt.arc(70,18,15,0,Math.PI*2,true);
+				cxt.closePath();
+				cxt.fill();
+				</script>
+		</canvas>
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="190">
+			<polygon points="100,10 40,180 190,60 10,60 160,180"
+			style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;" />
+		</svg>
+		<meta charset="utf-8">
+		<p id="demo">点击这个按钮，获得您的坐标：</p>
+		<button onclick="getLocation()">试一下</button>
+		<script>
+			var x=document.getElementById("demo");
+			function getLocation()
+			  {
+			  if (navigator.geolocation)
+			    {
+			    navigator.geolocation.getCurrentPosition(showPosition);
+			    }
+			  else{x.innerHTML="Geolocation is not supported by this browser.";}
+			  }
+			function showPosition(position)
+			  {
+			  x.innerHTML="Latitude: " + position.coords.latitude + 
+			  "<br />Longitude: " + position.coords.longitude;	
+			  }
+		</script>
+		<div id="visitor">
+		<script type="text/javascript">
+
+			if (localStorage.pagecount)
+				{
+				localStorage.pagecount=Number(localStorage.pagecount) +1;
+				}
+			else
+				{
+				localStorage.pagecount=1;
+				}
+			document.write("Visits: " + localStorage.pagecount + " time(s).");
+
+		</script> 
+		</div>
+		<div id='worker'>
+			<p>计数: <output id="result"></output></p>
+			<button onclick="startWorker()">开始 Worker</button> 
+			<button onclick="stopWorker()">停止 Worker</button>
+			<br /><br />
+
+			<script>
+				var w;
+
+				function startWorker()
+				{
+				if(typeof(Worker)!=="undefined")
+				  {
+				  if(typeof(w)=="undefined")
+				  {
+				  w=new Worker("/example/html5/demo_workers.js");
+				  }
+				  w.onmessage = function (event) {
+				    document.getElementById("result").innerHTML=event.data;
+				    };
+				  }
+				else
+				  {
+				  document.getElementById("result").innerHTML="Sorry, your browser does not support Web Workers...";
+				  }
+				}
+
+				function stopWorker()
+				{ 
+				w.terminate();
+				}
+			</script>
+		</div>
+	</body>
+</html>
